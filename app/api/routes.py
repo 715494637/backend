@@ -88,6 +88,37 @@ async def approve_user(user_id: str, current_admin: User = Depends(get_current_a
 
     return {"message": "用户审批成功"}
 
+@router.put("/users/{user_id}", response_model=UserSchema)
+async def update_user(user_id: str, user_data: UserUpdate, current_user: User = Depends(get_current_user), db: Session = Depends(get_db)):
+    # 检查权限：用户只能更新自己的信息，管理员可以更新所有用户
+    if current_user.role != "ADMIN" and current_user.id != user_id:
+        raise HTTPException(status_code=403, detail="权限不足")
+
+    user = db.query(User).filter(User.id == user_id).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="用户不存在")
+
+    # 普通用户只能更新用户名和头像
+    if current_user.role != "ADMIN":
+        allowed_fields = {"username", "avatar_url"}
+        for field in user_data.dict(exclude_unset=True):
+            if field not in allowed_fields:
+                raise HTTPException(status_code=403, detail=f"普通用户不能更新{field}字段")
+
+    # 检查用户名是否已存在（如果要更新的话）
+    if user_data.username and user_data.username != user.username:
+        existing_user = db.query(User).filter(User.username == user_data.username, User.id != user_id).first()
+        if existing_user:
+            raise HTTPException(status_code=400, detail="用户名已存在")
+
+    # 更新用户信息
+    for field, value in user_data.dict(exclude_unset=True).items():
+        setattr(user, field, value)
+
+    db.commit()
+    db.refresh(user)
+    return user
+
 @router.delete("/users/{user_id}")
 async def delete_user(user_id: str, current_admin: User = Depends(get_current_admin), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == user_id).first()
@@ -264,11 +295,11 @@ async def get_enterprises(db: Session = Depends(get_db)):
     return [e.name for e in enterprises]
 
 @router.post("/enterprises")
-async def create_enterprise(name: str, current_user: User = Depends(get_current_admin), db: Session = Depends(get_db)):
-    if db.query(Enterprise).filter(Enterprise.name == name).first():
+async def create_enterprise(enterprise: EnterpriseCreate, current_user: User = Depends(get_current_admin), db: Session = Depends(get_db)):
+    if db.query(Enterprise).filter(Enterprise.name == enterprise.name).first():
         raise HTTPException(status_code=400, detail="物业公司已存在")
 
-    new_enterprise = Enterprise(name=name)
+    new_enterprise = Enterprise(name=enterprise.name)
     db.add(new_enterprise)
     db.commit()
     return {"message": "物业公司添加成功"}
@@ -309,6 +340,36 @@ async def update_config(config_data: SystemConfigUpdate, current_user: User = De
 
     db.commit()
     return {"message": "系统配置更新成功"}
+
+# 开屏图管理
+@router.get("/splash-image")
+async def get_splash_image(db: Session = Depends(get_db)):
+    """获取开屏图"""
+    config = db.query(SystemConfig).first()
+    if config and config.splash_image:
+        return {"splash_image": config.splash_image}
+    return {"splash_image": None}
+
+@router.post("/splash-image")
+async def upload_splash_image(splash_data: dict, current_user: User = Depends(get_current_admin), db: Session = Depends(get_db)):
+    """上传开屏图"""
+    config = db.query(SystemConfig).first()
+    if not config:
+        config = SystemConfig()
+        db.add(config)
+
+    config.splash_image = splash_data.get("splash_image")
+    db.commit()
+    return {"message": "开屏图上传成功"}
+
+@router.delete("/splash-image")
+async def delete_splash_image(current_user: User = Depends(get_current_admin), db: Session = Depends(get_db)):
+    """删除开屏图"""
+    config = db.query(SystemConfig).first()
+    if config:
+        config.splash_image = None
+        db.commit()
+    return {"message": "开屏图删除成功"}
 
 # 海报管理
 @router.get("/posters", response_model=List[CustomPosterSchema])
