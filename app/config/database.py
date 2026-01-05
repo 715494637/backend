@@ -6,8 +6,8 @@
 
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from sqlalchemy.orm import declarative_base
-from app.config.settings import settings
-from app.utils.logger import logger
+from app.config import settings
+from app.utils import logger
 
 # ============================================
 # 创建异步数据库引擎

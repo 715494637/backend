@@ -1,8 +1,8 @@
 from datetime import datetime, timedelta
 from jose import JWTError, jwt
 from fastapi import HTTPException, status
-from app.config.settings import settings
-from app.utils.logger import logger
+from app.config import settings
+from app.utils import logger
 
 
 def create_access_token(data: dict) -> str:

@@ -84,6 +84,11 @@ class Settings(BaseSettings):
     log_compression: str = Field(default="zip", description="日志压缩格式")
 
     # ============================================
+    # ImageBB 图片上传配置
+    # ============================================
+    imagebb_api_key: str = Field(default="", description="ImageBB API 密钥")
+
+    # ============================================
     # Pydantic V2 配置
     # ============================================
     model_config = SettingsConfigDict(

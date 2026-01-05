@@ -10,7 +10,8 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from app.models import ContactQRCode
 from app.schemas import ContactQRCodeCreate
-from app.utils.logger import logger
+from app.utils import logger
+from app.services.imagebb_service import ImageBBService
 
 
 class ContactQRService:
@@ -44,9 +45,21 @@ class ContactQRService:
         Returns:
             ContactQRCode: 创建的二维码对象
         """
+        # 如果提供的是 base64 数据，则上传到 ImageBB
+        image_url = qr_data.image_url
+        if qr_data.image_url and qr_data.image_url.startswith('data:image'):
+            try:
+                imagebb_service = ImageBBService()
+                base64_data = ImageBBService.extract_base64_data(qr_data.image_url)
+                image_url = await imagebb_service.upload_base64(base64_data, f"qr_{qr_data.name}")
+                logger.info(f"二维码图片已上传到 ImageBB: {image_url}")
+            except Exception as e:
+                logger.error(f"二维码图片上传失败: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"图片上传失败: {str(e)}")
+
         new_qr = ContactQRCode(
             name=qr_data.name,
-            image_base64=qr_data.image_base64
+            image_url=image_url
         )
 
         db.add(new_qr)

@@ -11,7 +11,7 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from app.models import RiskScenario
 from app.schemas import RiskScenarioCreate
-from app.utils.logger import logger
+from app.utils import logger
 
 
 class RiskService:

@@ -7,13 +7,13 @@
 from typing import Optional
 from fastapi import APIRouter, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import get_db
+from app.db import get_db
 from app.schemas import (
     SystemConfigUpdate,
     SystemConfig as SystemConfigSchema
 )
-from app.services.config_service import ConfigService
-from app.core.dependencies import get_current_admin
+from app.services import ConfigService
+from app.core import get_current_admin
 from app.models import User
 
 router = APIRouter()

@@ -5,8 +5,8 @@
 """
 
 from sqlalchemy.ext.asyncio import AsyncSession, async_sessionmaker
-from app.config.database import async_engine
-from app.utils.logger import logger
+from app.config import async_engine
+from app.utils import logger
 from typing import AsyncGenerator
 
 

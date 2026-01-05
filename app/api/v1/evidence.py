@@ -8,13 +8,13 @@ from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import JSONResponse
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import get_db
+from app.db import get_db
 from app.schemas import (
     EvidenceListCreate,
     EvidenceList as EvidenceListSchema
 )
-from app.services.evidence_service import EvidenceService
-from app.core.dependencies import get_current_admin
+from app.services import EvidenceService
+from app.core import get_current_admin
 from app.models import User
 
 router = APIRouter()

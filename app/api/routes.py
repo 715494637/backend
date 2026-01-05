@@ -37,7 +37,7 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
     return {
         "access_token": access_token,
         "token_type": "bearer",
-        "user": UserSchema.from_orm(user)
+        "user": UserSchema.model_validate(user)
     }
 
 @router.post("/auth/register")

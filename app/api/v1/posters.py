@@ -7,13 +7,13 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
-from app.db.session import get_db
+from app.db import get_db
 from app.schemas import (
     CustomPosterCreate,
     CustomPoster as CustomPosterSchema
 )
-from app.services.poster_service import PosterService
-from app.core.dependencies import get_current_admin
+from app.services import PosterService
+from app.core import get_current_admin
 from app.models import User
 
 router = APIRouter()

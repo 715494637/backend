@@ -10,10 +10,9 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import traceback
 import time
-from app.config.settings import settings
-from app.config.database import init_db, close_db
-from app.utils.logger import setup_logging, logger
-from app.api.v1 import api_router
+from app.config import settings, init_db, close_db
+from app.utils import logger
+from app.api import api_router
 
 
 # ============================================

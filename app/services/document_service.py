@@ -10,7 +10,7 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from app.models import DocumentTemplate
 from app.schemas import DocumentTemplateCreate
-from app.utils.logger import logger
+from app.utils import logger
 
 
 class DocumentService:

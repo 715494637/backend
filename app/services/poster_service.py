@@ -10,7 +10,8 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from app.models import CustomPoster
 from app.schemas import CustomPosterCreate
-from app.utils.logger import logger
+from app.utils import logger
+from app.services.imagebb_service import ImageBBService
 
 
 class PosterService:
@@ -44,9 +45,21 @@ class PosterService:
         Returns:
             CustomPoster: 创建的海报对象
         """
+        # 如果提供的是 base64 数据，则上传到 ImageBB
+        image_url = poster_data.image_url
+        if poster_data.image_url and poster_data.image_url.startswith('data:image'):
+            try:
+                imagebb_service = ImageBBService()
+                base64_data = ImageBBService.extract_base64_data(poster_data.image_url)
+                image_url = await imagebb_service.upload_base64(base64_data, f"poster_{poster_data.name}")
+                logger.info(f"海报图片已上传到 ImageBB: {image_url}")
+            except Exception as e:
+                logger.error(f"海报图片上传失败: {str(e)}")
+                raise HTTPException(status_code=500, detail=f"图片上传失败: {str(e)}")
+
         new_poster = CustomPoster(
             name=poster_data.name,
-            image_base64=poster_data.image_base64
+            image_url=image_url
         )
 
         db.add(new_poster)

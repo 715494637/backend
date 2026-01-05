@@ -120,7 +120,7 @@ class CustomPoster(Base):
 
     id = Column(String(36), primary_key=True, default=generate_uuid)
     name = Column(String(100), nullable=False)
-    image_base64 = Column(Text)
+    image_url = Column(Text)  # 改为存储图片 URL 而不是 base64
 
 
 # ============================================
@@ -132,4 +132,4 @@ class ContactQRCode(Base):
 
     id = Column(String(36), primary_key=True, default=generate_uuid)
     name = Column(String(100), nullable=False)
-    image_base64 = Column(Text)
+    image_url = Column(Text)  # 改为存储图片 URL 而不是 base64

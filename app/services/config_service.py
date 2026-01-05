@@ -9,7 +9,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.models import SystemConfig
 from app.schemas import SystemConfigUpdate
-from app.utils.logger import logger
+from app.utils import logger
 
 
 class ConfigService:

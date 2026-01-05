@@ -10,7 +10,7 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from app.models import CivilCodeArticle
 from app.schemas import CivilCodeArticleCreate
-from app.utils.logger import logger
+from app.utils import logger
 
 
 class CivilCodeService:

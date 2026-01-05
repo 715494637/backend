@@ -18,5 +18,8 @@ pydantic-settings==2.7.1
 # 日志
 loguru==0.7.3
 
+# HTTP 客户端
+httpx==0.27.0
+
 # 加密
 cryptography>=42.0.0

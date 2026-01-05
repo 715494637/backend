@@ -269,7 +269,7 @@ class SystemConfig(SystemConfigBase):
 class CustomPosterBase(BaseModel):
     """自定义海报基础模型"""
     name: str
-    image_base64: str
+    image_url: str  # 改为存储图片 URL
 
 
 class CustomPosterCreate(CustomPosterBase):
@@ -291,7 +291,7 @@ class CustomPoster(CustomPosterBase):
 class ContactQRCodeBase(BaseModel):
     """联系二维码基础模型"""
     name: str
-    image_base64: str
+    image_url: str  # 改为存储图片 URL
 
 
 class ContactQRCodeCreate(ContactQRCodeBase):

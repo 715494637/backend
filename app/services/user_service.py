@@ -10,7 +10,7 @@ from sqlalchemy import select
 from fastapi import HTTPException
 from app.models import User
 from app.schemas import UserCreate, UserUpdate, AdminUserCreate
-from app.utils.logger import logger
+from app.utils import logger
 
 
 class UserService:
