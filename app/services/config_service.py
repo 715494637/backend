@@ -124,3 +124,57 @@ class ConfigService:
             logger.info("开屏图删除成功")
         else:
             logger.warning("系统配置不存在，无需删除开屏图")
+
+    @staticmethod
+    async def get_renovation_items(db: AsyncSession) -> list:
+        """
+        获取装修巡查项配置
+
+        Args:
+            db: 异步数据库会话
+
+        Returns:
+            list: 装修巡查项列表
+        """
+        import json
+        config = await db.execute(select(SystemConfig))
+        config = config.scalar_one_or_none()
+
+        if config and config.renovation_items:
+            try:
+                items = json.loads(config.renovation_items)
+                if isinstance(items, list):
+                    return items
+            except json.JSONDecodeError:
+                pass
+
+        # 返回默认装修巡查项
+        return [
+            "是否擅自变动建筑主体和承重结构",
+            "是否将没有防水要求的房间改为卫生间/厨房间",
+            "是否擅自改变住宅外立面/开设门窗",
+            "是否损坏房屋原有节能设施/降低节能效果",
+            "施工人员是否佩戴出入证/穿戴反光背心",
+            "装修垃圾是否袋装并堆放在指定区域"
+        ]
+
+    @staticmethod
+    async def update_renovation_items(db: AsyncSession, items: list) -> None:
+        """
+        保存装修巡查项配置
+
+        Args:
+            db: 异步数据库会话
+            items: 装修巡查项列表
+        """
+        import json
+        config = await db.execute(select(SystemConfig))
+        config = config.scalar_one_or_none()
+
+        if not config:
+            config = SystemConfig()
+            db.add(config)
+
+        config.renovation_items = json.dumps(items, ensure_ascii=False)
+        await db.commit()
+        logger.info("装修巡查项配置保存成功")

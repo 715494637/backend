@@ -44,10 +44,10 @@ class Settings(BaseSettings):
         description="异步数据库连接 URL"
     )
 
-    # 数据库连接池配置
-    db_pool_size: int = Field(default=5, description="连接池大小")
-    db_max_overflow: int = Field(default=10, description="连接池最大溢出数")
-    db_pool_timeout: int = Field(default=30, description="连接池超时时间（秒）")
+    # 数据库连接池配置（优化版）
+    db_pool_size: int = Field(default=10, description="连接池大小（优化: 5→10）")
+    db_max_overflow: int = Field(default=20, description="连接池最大溢出数（优化: 10→20）")
+    db_pool_timeout: int = Field(default=60, description="连接池超时时间（秒）（优化: 30→60）")
     db_pool_recycle: int = Field(default=3600, description="连接回收时间（秒）")
     db_echo: bool = Field(default=False, description="是否打印 SQL 语句")
 

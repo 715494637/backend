@@ -116,3 +116,45 @@ async def delete_splash_image(
     """
     await ConfigService.delete_splash_image(db)
     return {"message": "开屏图删除成功"}
+
+
+@router.get("/renovation-items")
+async def get_renovation_items(db: AsyncSession = Depends(get_db)):
+    """
+    获取装修巡查项配置
+
+    Args:
+        db: 异步数据库会话
+
+    Returns:
+        dict: 包含装修巡查项列表的字典
+    """
+    items = await ConfigService.get_renovation_items(db)
+    return {"items": items}
+
+
+@router.put("/renovation-items")
+async def update_renovation_items(
+    data: dict,
+    current_admin: User = Depends(get_current_admin),
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    保存装修巡查项配置（仅管理员）
+
+    Args:
+        data: 包含装修巡查项列表的字典
+        current_admin: 当前管理员用户
+        db: 异步数据库会话
+
+    Returns:
+        dict: 保存结果消息
+
+    Raises:
+        HTTPException: 非管理员用户访问时抛出 403 错误
+    """
+    items = data.get("items", [])
+    if not isinstance(items, list):
+        raise HTTPException(status_code=400, detail="items必须是数组")
+    await ConfigService.update_renovation_items(db, items)
+    return {"message": "装修巡查项配置保存成功"}

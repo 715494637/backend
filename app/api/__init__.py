@@ -15,6 +15,16 @@ from app.api.v1 import (
     config,
     posters,
     contact_qr,
+    collections,
+    scripts,
+    sops,
+    renovation,
+    vip,
+    special_projects,
+    health_check,
+    service_requests,
+    ai_kb,
+    usage_logs,
     api_router
 )
 
@@ -29,5 +39,15 @@ __all__ = [
     "config",
     "posters",
     "contact_qr",
+    "collections",
+    "scripts",
+    "sops",
+    "renovation",
+    "vip",
+    "special_projects",
+    "health_check",
+    "service_requests",
+    "ai_kb",
+    "usage_logs",
     "api_router"
 ]

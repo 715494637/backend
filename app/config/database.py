@@ -4,8 +4,10 @@
 使用 SQLAlchemy 2.0 + aiomysql 实现异步数据库连接
 """
 
-from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
-from sqlalchemy.orm import declarative_base
+from sqlalchemy import select, text
+from sqlalchemy import create_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession, async_sessionmaker
+from sqlalchemy.orm import declarative_base, sessionmaker
 from app.config import settings
 from app.utils import logger
 
@@ -14,13 +16,39 @@ from app.utils import logger
 # ============================================
 async_engine = create_async_engine(
     settings.database_url,
-    echo=settings.db_echo,  # 是否打印 SQL 语句
-    pool_size=settings.db_pool_size,  # 连接池大小
-    max_overflow=settings.db_max_overflow,  # 连接池最大溢出数
-    pool_timeout=settings.db_pool_timeout,  # 连接池超时时间
-    pool_recycle=settings.db_pool_recycle,  # 连接回收时间
-    pool_pre_ping=True,  # 连接池预检查，防止连接失效
+    echo=settings.db_echo,
+    pool_size=settings.db_pool_size,
+    max_overflow=settings.db_max_overflow,
+    pool_timeout=settings.db_pool_timeout,
+    pool_recycle=settings.db_pool_recycle,
+    pool_pre_ping=True,
 )
+
+# 异步会话工厂
+AsyncSessionLocal = async_sessionmaker(
+    async_engine,
+    class_=AsyncSession,
+    expire_on_commit=False,
+    autocommit=False,
+    autoflush=False,
+)
+
+# ============================================
+# 创建同步数据库引擎（用于迁移脚本等）
+# ============================================
+sync_url = settings.database_url.replace('aiomysql', 'pymysql')
+engine = create_engine(
+    sync_url,
+    echo=settings.db_echo,
+    pool_size=settings.db_pool_size,
+    max_overflow=settings.db_max_overflow,
+    pool_timeout=settings.db_pool_timeout,
+    pool_recycle=settings.db_pool_recycle,
+    pool_pre_ping=True,
+)
+
+# 同步会话工厂
+SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 # ============================================
 # 创建基础模型类

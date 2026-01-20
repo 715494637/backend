@@ -1,10 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.orm import Session
+from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import or_
 import json
 from typing import List
 
-from app.database import get_db
+from app.db import get_db
 from app.models import User, DocumentTemplate, RiskScenario, EvidenceList, CivilCodeArticle, Enterprise, SystemConfig, CustomPoster, ContactQRCode
 from app.schemas import (
     UserCreate, UserUpdate, User as UserSchema, LoginRequest, Token,

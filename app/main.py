@@ -27,14 +27,14 @@ async def lifespan(app: FastAPI):
     """
     # 启动时执行
     logger.info(f"{settings.app_name} 正在启动...")
-    await init_db()
+    await init_db()  # 异步调用
     logger.info(f"{settings.app_name} 启动完成")
 
     yield
 
     # 关闭时执行
     logger.info(f"{settings.app_name} 正在关闭...")
-    await close_db()
+    await close_db()  # 异步调用
     logger.info(f"{settings.app_name} 已关闭")
 
 

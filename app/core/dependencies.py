@@ -1,5 +1,5 @@
 """
-认证依赖注入模块
+认证依赖注入模块（异步版本）
 
 提供获取当前用户、管理员和已审批用户的依赖注入函数
 """
@@ -8,9 +8,10 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.db import get_db
+from app.db import get_db  # 这个会返回正确的会话类型
 from app.models import User
 from app.core import verify_token
+from typing import AsyncGenerator
 
 # HTTP Bearer 认证方案
 security = HTTPBearer()
@@ -21,7 +22,7 @@ async def get_current_user(
     db: AsyncSession = Depends(get_db)
 ) -> User:
     """
-    获取当前认证用户的依赖注入
+    获取当前认证用户的依赖注入（异步）
 
     Args:
         credentials: HTTP认证凭据
@@ -52,7 +53,7 @@ async def get_current_admin(
     current_user: User = Depends(get_current_user)
 ) -> User:
     """
-    获取当前管理员用户的依赖注入
+    获取当前管理员用户的依赖注入（异步）
 
     Args:
         current_user: 当前认证用户
@@ -76,7 +77,7 @@ async def get_current_approved_user(
     current_user: User = Depends(get_current_user)
 ) -> User:
     """
-    获取当前已审批用户的依赖注入
+    获取当前已审批用户的依赖注入（异步）
 
     Args:
         current_user: 当前认证用户

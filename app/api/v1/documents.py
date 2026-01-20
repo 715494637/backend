@@ -7,6 +7,7 @@
 from typing import List
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
+from sqlalchemy import select, func
 from app.db import get_db
 from app.schemas import (
     DocumentTemplateCreate,
@@ -31,6 +32,25 @@ async def get_documents(db: AsyncSession = Depends(get_db)):
         List[DocumentTemplate]: 文档模板列表
     """
     return await DocumentService.get_documents(db)
+
+
+@router.get("/categories")
+async def get_document_categories(db: AsyncSession = Depends(get_db)):
+    """
+    获取文档分类列表
+
+    Args:
+        db: 异步数据库会话
+
+    Returns:
+        List[str]: 分类列表
+    """
+    result = await db.execute(select(func.distinct(DocumentTemplate.category)))
+    categories = [row[0] for row in result.fetchall() if row[0]]
+    # 确保包含默认分类
+    default_categories = ["全部", "前介承接", "业户服务", "外包管理", "纠纷告知"]
+    all_categories = list(set(categories + default_categories))
+    return sorted(all_categories, key=lambda x: default_categories.index(x) if x in default_categories else 999)
 
 
 @router.post("", response_model=DocumentTemplateSchema)
