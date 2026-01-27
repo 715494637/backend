@@ -41,4 +41,7 @@ dependencies = [
 
     # 加密
     "cryptography>=42.0.0",
+
+    # Google Gen AI
+    "google-genai==1.0.0",
 ]

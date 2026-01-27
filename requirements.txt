@@ -1,9 +1,13 @@
+# 东元法物后端依赖
+# 使用 pip 安装: pip install -r requirements.txt
+# 推荐使用 uv: uv pip install -r requirements.txt
+
 # Web 框架
 fastapi==0.122.0
 uvicorn[standard]==0.34.0
 
-# 数据库（使用 sqlalchemy 而不是 sqlalchemy[asyncio] 避免 greenlet 编译问题）
-sqlalchemy==2.0.37
+# 数据库
+sqlalchemy[asyncio]==2.0.37
 aiomysql==0.2.0
 
 # 认证与安全
@@ -23,3 +27,6 @@ httpx==0.27.0
 
 # 加密
 cryptography>=42.0.0
+
+# Google Gen AI
+google-genai>=1.60.0

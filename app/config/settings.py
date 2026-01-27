@@ -89,6 +89,18 @@ class Settings(BaseSettings):
     imagebb_api_key: str = Field(default="", description="ImageBB API 密钥")
 
     # ============================================
+    # Google Gemini AI 配置
+    # ============================================
+    gemini_api_key: str = Field(default="", description="Gemini API 密钥（后端存储，保护前端暴露）")
+    gemini_base_url: str = Field(default="", description="Gemini API 基础 URL（可选，用于代理）")
+
+    # ============================================
+    # 微信公众号配置
+    # ============================================
+    wechat_app_id: str = Field(default="", description="微信公众号 AppID")
+    wechat_app_secret: str = Field(default="", description="微信公众号 AppSecret")
+
+    # ============================================
     # Pydantic V2 配置
     # ============================================
     model_config = SettingsConfigDict(

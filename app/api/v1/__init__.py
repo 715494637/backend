@@ -5,7 +5,7 @@ from app.api.v1 import (
     enterprises, config, posters, contact_qr,
     collections, scripts, sops, renovation, vip,
     special_projects, health_check, service_requests,
-    ai_kb, usage_logs
+    ai_kb, usage_logs, ai, wechat
 )
 
 # 创建 API v1 路由器
@@ -33,3 +33,5 @@ api_router.include_router(health_check.router, prefix="/health-check", tags=["�
 api_router.include_router(service_requests.router, prefix="/service-requests", tags=["服务请求"])
 api_router.include_router(ai_kb.router, prefix="/ai-kb", tags=["AI知识库"])
 api_router.include_router(usage_logs.router, prefix="/usage-logs", tags=["使用日志"])
+api_router.include_router(ai.router, prefix="/ai", tags=["AI代理"])
+api_router.include_router(wechat.router, prefix="/wechat", tags=["微信"])
