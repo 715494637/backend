@@ -64,8 +64,10 @@ async def init_db() -> None:
     注意：生产环境建议使用 Alembic 进行数据库迁移
     """
     async with async_engine.begin() as conn:
-        # 导入所有模型以确保它们被注册
-        from app import models  # noqa: F401
+        # 导入所有域模块的模型以确保它们被注册
+        from app.domains.auth import models as auth_models  # noqa: F401
+        from app.domains.users import models as users_models  # noqa: F401
+        from app.domains.collections import models as collections_models  # noqa: F401
 
         # 创建所有表
         await conn.run_sync(Base.metadata.create_all)

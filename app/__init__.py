@@ -22,22 +22,6 @@ from app.db import get_db
 # 导出日志工具
 from app.utils import logger, setup_logging
 
-# 导出 API 路由
-from app.api import api_router
-
-# 导出数据模型
-from app.models import (
-    User,
-    Enterprise,
-    DocumentTemplate,
-    RiskScenario,
-    EvidenceList,
-    CustomPoster,
-    SystemConfig,
-    ContactQRCode,
-    CivilCodeArticle
-)
-
 __all__ = [
     # 配置和数据库
     "settings",
@@ -55,16 +39,4 @@ __all__ = [
     # 日志工具
     "logger",
     "setup_logging",
-    # API 路由
-    "api_router",
-    # 数据模型
-    "User",
-    "Enterprise",
-    "DocumentTemplate",
-    "RiskScenario",
-    "EvidenceList",
-    "CustomPoster",
-    "SystemConfig",
-    "ContactQRCode",
-    "CivilCodeArticle"
 ]
