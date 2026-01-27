@@ -41,19 +41,29 @@ class UserService:
     """用户管理业务逻辑服务"""
 
     @staticmethod
-    async def get_all_users(db: AsyncSession) -> List[User]:
+    async def get_all_users(
+        db: AsyncSession,
+        skip: int = 0,
+        limit: int = 100
+    ) -> List[User]:
         """
-        获取用户列表
+        获取用户列表（支持分页）
 
         Args:
             db: 异步数据库会话
+            skip: 跳过的记录数
+            limit: 返回的最大记录数
 
         Returns:
             List[User]: 用户列表
         """
-        result = await db.execute(select(User))
+        result = await db.execute(
+            select(User)
+            .offset(skip)
+            .limit(limit)
+        )
         users = result.scalars().all()
-        logger.info(f"获取用户列表，共 {len(users)} 个用户")
+        logger.info(f"获取用户列表，共 {len(users)} 个用户 (skip={skip}, limit={limit})")
         return users
 
     @staticmethod
@@ -194,3 +204,55 @@ class UserService:
         await db.commit()
 
         logger.info(f"用户 {username} 删除成功")
+
+    @staticmethod
+    async def get_user_stats(db: AsyncSession) -> dict:
+        """
+        获取用户统计信息
+
+        Args:
+            db: 异步数据库会话
+
+        Returns:
+            dict: 包含用户统计信息的字典
+                - total_users: 总用户数
+                - approved_users: 已审批用户数
+                - pending_users: 待审批用户数
+                - admin_users: 管理员数量
+                - regular_users: 普通用户数量
+        """
+        # 总用户数
+        total_result = await db.execute(select(User))
+        total_users = len(total_result.scalars().all())
+
+        # 已审批用户数
+        approved_result = await db.execute(
+            select(User).where(User.approval_status == "APPROVED")
+        )
+        approved_users = len(approved_result.scalars().all())
+
+        # 待审批用户数
+        pending_result = await db.execute(
+            select(User).where(User.approval_status == "PENDING")
+        )
+        pending_users = len(pending_result.scalars().all())
+
+        # 管理员数量
+        admin_result = await db.execute(
+            select(User).where(User.role == "ADMIN")
+        )
+        admin_users = len(admin_result.scalars().all())
+
+        # 普通用户数量
+        regular_users = total_users - admin_users
+
+        stats = {
+            "total_users": total_users,
+            "approved_users": approved_users,
+            "pending_users": pending_users,
+            "admin_users": admin_users,
+            "regular_users": regular_users
+        }
+
+        logger.info(f"获取用户统计信息: {stats}")
+        return stats
