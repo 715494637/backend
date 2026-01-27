@@ -7,7 +7,7 @@
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from passlib.context import CryptContext
 import bcrypt  # 移到文件顶部，避免每次调用都导入
 from app.models import User
@@ -209,6 +209,7 @@ class UserService:
 
         Raises:
             HTTPException: 用户不存在时抛出
+            HTTPException: 用户已审批时抛出
         """
         result = await db.execute(select(User).where(User.id == user_id))
         user = result.scalar_one_or_none()
@@ -216,6 +217,10 @@ class UserService:
         if not user:
             logger.error(f"用户 {user_id} 不存在")
             raise HTTPException(status_code=404, detail="用户不存在")
+
+        if user.approval_status == "APPROVED":
+            logger.warning(f"用户 {user.username} 已审批")
+            raise HTTPException(status_code=400, detail="用户已审批")
 
         user.approval_status = "APPROVED"
         await db.commit()
@@ -252,9 +257,9 @@ class UserService:
             logger.error(f"用户 {user_id} 不存在")
             raise HTTPException(status_code=404, detail="用户不存在")
 
-        # 普通用户只能更新用户名和头像
+        # 普通用户只能更新用户名、手机号和头像
         if current_user.role != "ADMIN":
-            allowed_fields = {"username", "avatar_url"}
+            allowed_fields = {"username", "phone_number", "avatar_url"}
             for field in user_data.model_dump(exclude_unset=True):
                 if field not in allowed_fields:
                     logger.warning(f"普通用户 {current_user.username} 尝试更新禁止字段 {field}")
