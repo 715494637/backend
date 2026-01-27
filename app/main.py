@@ -10,9 +10,14 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import traceback
 import time
+
 from app.config import settings, init_db, close_db
 from app.utils import logger
-from app.api import api_router
+
+# 导入领域路由
+from app.domains.auth.router import router as auth_router
+from app.domains.users.router import router as users_router
+from app.domains.collections.router import router as collections_router
 
 
 # ============================================
@@ -20,21 +25,15 @@ from app.api import api_router
 # ============================================
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """
-    应用生命周期管理
-
-    在应用启动时初始化数据库连接，关闭时清理资源
-    """
-    # 启动时执行
+    """应用生命周期管理"""
     logger.info(f"{settings.app_name} 正在启动...")
-    await init_db()  # 异步调用
+    await init_db()
     logger.info(f"{settings.app_name} 启动完成")
 
     yield
 
-    # 关闭时执行
     logger.info(f"{settings.app_name} 正在关闭...")
-    await close_db()  # 异步调用
+    await close_db()
     logger.info(f"{settings.app_name} 已关闭")
 
 
@@ -66,18 +65,7 @@ app.add_middleware(
 # ============================================
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
-    """
-    全局异常处理器
-
-    捕获所有未处理的异常，记录详细日志并返回统一格式的错误响应
-
-    Args:
-        request: 请求对象
-        exc: 异常对象
-
-    Returns:
-        JSONResponse: 错误响应
-    """
+    """全局异常处理器"""
     logger.error("=" * 60)
     logger.error("全局异常捕获")
     logger.error(f"请求路径: {request.url}")
@@ -103,18 +91,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 # ============================================
 @app.middleware("http")
 async def log_requests(request: Request, call_next):
-    """
-    请求日志中间件
-
-    记录每个请求的开始和完成时间，以及处理耗时
-
-    Args:
-        request: 请求对象
-        call_next: 下一个中间件或路由处理器
-
-    Returns:
-        Response: 响应对象
-    """
+    """请求日志中间件"""
     start_time = time.time()
     logger.info(f"请求开始: {request.method} {request.url}")
 
@@ -132,7 +109,14 @@ async def log_requests(request: Request, call_next):
 # ============================================
 # 注册 API 路由
 # ============================================
-app.include_router(api_router, prefix="/api/v1")
+# 认证相关
+app.include_router(auth_router, prefix="/api/v1/auth", tags=["认证"])
+
+# 用户管理
+app.include_router(users_router, prefix="/api/v1/users", tags=["用户管理"])
+
+# 催收记录
+app.include_router(collections_router, prefix="/api/v1/collections", tags=["催收记录"])
 
 
 # ============================================
@@ -140,14 +124,7 @@ app.include_router(api_router, prefix="/api/v1")
 # ============================================
 @app.get("/", tags=["根路由"])
 async def root():
-    """
-    根路由
-
-    返回应用基本信息
-
-    Returns:
-        dict: 应用信息
-    """
+    """根路由"""
     return {
         "message": f"{settings.app_name} 正在运行",
         "version": settings.app_version,
@@ -160,14 +137,7 @@ async def root():
 # ============================================
 @app.get("/health", tags=["健康检查"])
 async def health_check():
-    """
-    健康检查端点
-
-    用于负载均衡器或监控服务检查应用健康状态
-
-    Returns:
-        dict: 健康状态信息
-    """
+    """健康检查端点"""
     return {
         "status": "healthy",
         "version": settings.app_version,
