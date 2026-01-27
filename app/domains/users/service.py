@@ -6,7 +6,7 @@
 
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select, or_
+from sqlalchemy import select, func, case
 from fastapi import HTTPException, status
 import bcrypt
 
@@ -221,37 +221,22 @@ class UserService:
                 - admin_users: 管理员数量
                 - regular_users: 普通用户数量
         """
-        # 总用户数
-        total_result = await db.execute(select(User))
-        total_users = len(total_result.scalars().all())
-
-        # 已审批用户数
-        approved_result = await db.execute(
-            select(User).where(User.approval_status == "APPROVED")
+        result = await db.execute(
+            select(
+                func.count(User.id).label('total_users'),
+                func.sum(case((User.approval_status == "APPROVED", 1), else_=0)).label('approved_users'),
+                func.sum(case((User.approval_status == "PENDING", 1), else_=0)).label('pending_users'),
+                func.sum(case((User.role == "ADMIN", 1), else_=0)).label('admin_users'),
+            )
         )
-        approved_users = len(approved_result.scalars().all())
-
-        # 待审批用户数
-        pending_result = await db.execute(
-            select(User).where(User.approval_status == "PENDING")
-        )
-        pending_users = len(pending_result.scalars().all())
-
-        # 管理员数量
-        admin_result = await db.execute(
-            select(User).where(User.role == "ADMIN")
-        )
-        admin_users = len(admin_result.scalars().all())
-
-        # 普通用户数量
-        regular_users = total_users - admin_users
+        row = result.one()
 
         stats = {
-            "total_users": total_users,
-            "approved_users": approved_users,
-            "pending_users": pending_users,
-            "admin_users": admin_users,
-            "regular_users": regular_users
+            "total_users": row.total_users,
+            "approved_users": row.approved_users or 0,
+            "pending_users": row.pending_users or 0,
+            "admin_users": row.admin_users or 0,
+            "regular_users": (row.total_users or 0) - (row.admin_users or 0)
         }
 
         logger.info(f"获取用户统计信息: {stats}")
