@@ -1,8 +1,8 @@
 """
-催收记录服务模块 (更新以匹配实际数据库)
+催收记录服务模块
 """
 
-import json
+import datetime
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
@@ -19,11 +19,9 @@ class CollectionService:
         return [
             {
                 "id": r.id,
-                "user_id": r.user_id,
-                "debtor_name": r.debtor_name,
-                "property_unit": r.property_unit,
-                "arrears_amount": float(r.arrears_amount) if r.arrears_amount else 0,
-                "collection_status": r.collection_status,
+                "owner_name": r.debtor_name or "",
+                "room_number": r.property_unit or "",
+                "amount": float(r.arrears_amount) if r.arrears_amount else 0,
                 "created_at": r.created_at
             }
             for r in records
@@ -31,23 +29,25 @@ class CollectionService:
 
     @staticmethod
     async def create(db: AsyncSession, user_id: str, data: dict) -> dict:
+        now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         record = CollectionRecordModel(
             user_id=user_id,
-            debtor_name=data.get("debtor_name", ""),
-            property_unit=data.get("property_unit", ""),
+            debtor_name=data.get("owner_name", ""),
+            property_unit=data.get("room_number", ""),
             arrears_amount=str(data.get("amount", 0)),
-            collection_status="PENDING"
+            arrears_months=str(data.get("arrears_months", 0)),
+            collection_status="PENDING",
+            created_at=now,
+            updated_at=now
         )
         db.add(record)
         await db.commit()
         await db.refresh(record)
         return {
             "id": record.id,
-            "user_id": record.user_id,
-            "debtor_name": record.debtor_name,
-            "property_unit": record.property_unit,
-            "arrears_amount": float(record.arrears_amount),
-            "collection_status": record.collection_status
+            "owner_name": record.debtor_name,
+            "room_number": record.property_unit,
+            "amount": float(record.arrears_amount)
         }
 
     @staticmethod
@@ -56,16 +56,18 @@ class CollectionService:
         record = result.scalar_one_or_none()
         if not record:
             return None
-        record.debtor_name = data.get("debtor_name", record.debtor_name)
-        record.property_unit = data.get("property_unit", record.property_unit)
-        record.arrears_amount = str(data.get("amount", record.arrears_amount))
+        if "owner_name" in data:
+            record.debtor_name = data["owner_name"]
+        if "room_number" in data:
+            record.property_unit = data["room_number"]
+        if "amount" in data:
+            record.arrears_amount = str(data["amount"])
         await db.commit()
         return {
             "id": record.id,
-            "user_id": record.user_id,
-            "debtor_name": record.debtor_name,
-            "property_unit": record.property_unit,
-            "arrears_amount": float(record.arrears_amount)
+            "owner_name": record.debtor_name,
+            "room_number": record.property_unit,
+            "amount": float(record.arrears_amount)
         }
 
     @staticmethod
@@ -86,9 +88,7 @@ class CollectionService:
             return None
         return {
             "id": record.id,
-            "user_id": record.user_id,
-            "debtor_name": record.debtor_name,
-            "property_unit": record.property_unit,
-            "arrears_amount": float(record.arrears_amount) if record.arrears_amount else 0,
-            "collection_status": record.collection_status
+            "owner_name": record.debtor_name or "",
+            "room_number": record.property_unit or "",
+            "amount": float(record.arrears_amount) if record.arrears_amount else 0
         }

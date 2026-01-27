@@ -2,7 +2,8 @@
 催收记录 API 路由模块 (更新以匹配实际数据库)
 """
 
-from typing import List, Any
+from typing import List, Any, Optional
+from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.db import get_db
@@ -11,6 +12,21 @@ from app.core import get_current_user
 from app.models import User
 
 router = APIRouter()
+
+
+class CollectionCreateSchema(BaseModel):
+    """创建催收记录的请求模型"""
+    owner_name: str
+    room_number: str
+    amount: float
+    arrears_months: Optional[int] = 0
+
+
+class CollectionUpdateSchema(BaseModel):
+    """更新催收记录的请求模型"""
+    owner_name: Optional[str] = None
+    room_number: Optional[str] = None
+    amount: Optional[float] = None
 
 
 @router.get("")
@@ -24,23 +40,23 @@ async def get_collections(
 
 @router.post("")
 async def create_collection(
-    data: dict,
+    data: CollectionCreateSchema,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Any:
     """创建新的催收记录"""
-    return await CollectionService.create(db, current_user.id, data)
+    return await CollectionService.create(db, current_user.id, data.model_dump())
 
 
 @router.put("/{record_id}")
 async def update_collection(
     record_id: str,
-    data: dict,
+    data: CollectionUpdateSchema,
     current_user: User = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
 ) -> Any:
     """更新催收记录"""
-    result = await CollectionService.update(db, record_id, data)
+    result = await CollectionService.update(db, record_id, data.model_dump())
     if not result:
         raise HTTPException(status_code=404, detail="记录不存在")
     return result
