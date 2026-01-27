@@ -8,12 +8,14 @@
 # TODO: 启用这些导入，待各子模块创建完成后
 # from app.domains import auth, users, collections, documents, risks, evidence, civil_code
 
-__all__ = [
-    "auth",
-    "users",
-    "collections",
-    "documents",
-    "risks",
-    "evidence",
-    "civil_code",
-]
+# TODO: 启用 __all__，待各子模块创建完成后
+# __all__ = [
+#     "auth",
+#     "users",
+#     "collections",
+#     "documents",
+#     "risks",
+#     "evidence",
+#     "civil_code",
+# ]
+__all__ = []  # 临时空列表，待子模块实现后更新
