@@ -15,12 +15,13 @@
 # from app.domains.auth.service import AuthService
 # from app.domains.auth.router import router as auth_router
 
-__all__ = [
-    "User",
-    "LoginRequest",
-    "Token",
-    "UserCreate",
-    "UserUpdate",
-    "AuthService",
-    "auth_router",
-]
+# TODO [后续任务]: 取消注释以下 __all__ 列表
+# __all__ = [
+#     "User",
+#     "LoginRequest",
+#     "Token",
+#     "UserCreate",
+#     "UserUpdate",
+#     "AuthService",
+#     "auth_router",
+# ]
