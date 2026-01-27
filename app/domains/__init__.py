@@ -5,7 +5,8 @@
 每个领域模块包含：models, schemas, service, router, tests
 """
 
-from app.domains import auth, users, collections, documents, risks, evidence, civil_code
+# TODO: 启用这些导入，待各子模块创建完成后
+# from app.domains import auth, users, collections, documents, risks, evidence, civil_code
 
 __all__ = [
     "auth",
