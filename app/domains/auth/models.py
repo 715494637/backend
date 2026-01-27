@@ -4,13 +4,14 @@
 定义用户相关的数据库模型
 """
 
+import uuid
+
 from sqlalchemy import Column, String, Boolean, JSON
 from app.config.database import Base
 
 
 def generate_uuid() -> str:
     """生成 UUID 字符串"""
-    import uuid
     return str(uuid.uuid4())
 
 
