@@ -4,7 +4,7 @@ Pydantic 数据模型定义
 使用 Pydantic V2 语法定义所有 API 请求和响应的数据结构
 """
 
-from pydantic import BaseModel, ConfigDict, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, field_validator, model_validator, Field
 from typing import Optional, List, Any, Literal
 import json
 from app.utils.logger import logger
@@ -101,6 +101,11 @@ class TokenResponse(BaseModel):
 # 文档模板相关 Schema
 # ============================================
 
+class CategoryCreate(BaseModel):
+    """分类创建模型"""
+    category: str = Field(..., description="分类名称")
+
+
 class DocumentTemplateBase(BaseModel):
     """文档模板基础模型"""
     title: str
@@ -119,6 +124,28 @@ class DocumentTemplate(DocumentTemplateBase):
     """文档模板响应模型"""
     id: str
     file_url: Optional[str] = None
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+# ============================================
+# 文档分类相关 Schema
+# ============================================
+
+class DocCategoryBase(BaseModel):
+    """文档分类基础模型"""
+    name: str
+
+
+class DocCategoryCreate(DocCategoryBase):
+    """文档分类创建模型"""
+    pass
+
+
+class DocCategory(DocCategoryBase):
+    """文档分类响应模型"""
+    id: int
+    created_at: Optional[str] = None
 
     model_config = ConfigDict(from_attributes=True)
 

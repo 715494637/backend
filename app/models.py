@@ -4,9 +4,10 @@ SQLAlchemy ORM 模型定义
 定义所有数据库表的 ORM 模型
 """
 
-from sqlalchemy import Column, String, Text, Boolean, JSON
+from sqlalchemy import Column, String, Text, Boolean, JSON, Integer, DateTime
 from app.config.database import Base
 import uuid
+from datetime import datetime
 
 
 def generate_uuid():
@@ -46,6 +47,18 @@ class DocumentTemplate(Base):
     description = Column(Text)
     content = Column(Text)
     file_url = Column(Text)
+
+
+# ============================================
+# 文档分类模型
+# ============================================
+class DocCategory(Base):
+    """文档分类表"""
+    __tablename__ = "doc_categories"
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    name = Column(String(50), unique=True, nullable=False, index=True)
+    created_at = Column(DateTime, default=datetime.utcnow)
 
 
 # ============================================
