@@ -20,7 +20,6 @@ from app.services.sop_service import SOPService
 from app.services.renovation_service import RenovationService
 from app.services.vip_service import VipService
 from app.services.special_project_service import SpecialProjectService
-from app.services.health_check_service import HealthCheckService
 from app.services.service_request_service import ServiceRequestService
 
 __all__ = [
@@ -40,6 +39,5 @@ __all__ = [
     "RenovationService",
     "VipService",
     "SpecialProjectService",
-    "HealthCheckService",
     "ServiceRequestService"
 ]

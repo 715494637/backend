@@ -1,19 +1,24 @@
 """
-法务体检服务模块 (更新以匹配实际数据库)
+法务体检领域 - 业务逻辑服务
 """
 
 import json
 from typing import List, Optional
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from app.models import HealthCheckSection as HealthCheckSectionModel
+from app.domains.health_check.models import HealthCheckSection
 
 
 class HealthCheckService:
+    """法务体检业务逻辑服务"""
+
     @staticmethod
     async def get_all(db: AsyncSession) -> List[dict]:
+        """获取所有法务体检板块"""
         result = await db.execute(
-            select(HealthCheckSectionModel).where(HealthCheckSectionModel.is_active == "1").order_by(HealthCheckSectionModel.sort_order)
+            select(HealthCheckSection)
+            .where(HealthCheckSection.is_active == "1")
+            .order_by(HealthCheckSection.sort_order)
         )
         sections = result.scalars().all()
         return [
@@ -30,7 +35,10 @@ class HealthCheckService:
 
     @staticmethod
     async def get_by_id(db: AsyncSession, section_id: str) -> Optional[dict]:
-        result = await db.execute(select(HealthCheckSectionModel).where(HealthCheckSectionModel.id == section_id))
+        """根据 ID 获取法务体检板块"""
+        result = await db.execute(
+            select(HealthCheckSection).where(HealthCheckSection.id == section_id)
+        )
         section = result.scalar_one_or_none()
         if not section:
             return None
@@ -42,7 +50,8 @@ class HealthCheckService:
 
     @staticmethod
     async def create(db: AsyncSession, data: dict) -> dict:
-        section = HealthCheckSectionModel(
+        """创建法务体检板块"""
+        section = HealthCheckSection(
             section_title=data.get("title", ""),
             section_description=data.get("description", ""),
             category=data.get("category", ""),
@@ -62,7 +71,10 @@ class HealthCheckService:
 
     @staticmethod
     async def update(db: AsyncSession, section_id: str, data: dict) -> Optional[dict]:
-        result = await db.execute(select(HealthCheckSectionModel).where(HealthCheckSectionModel.id == section_id))
+        """更新法务体检板块"""
+        result = await db.execute(
+            select(HealthCheckSection).where(HealthCheckSection.id == section_id)
+        )
         section = result.scalar_one_or_none()
         if not section:
             return None
@@ -79,7 +91,10 @@ class HealthCheckService:
 
     @staticmethod
     async def delete(db: AsyncSession, section_id: str) -> bool:
-        result = await db.execute(select(HealthCheckSectionModel).where(HealthCheckSectionModel.id == section_id))
+        """删除法务体检板块"""
+        result = await db.execute(
+            select(HealthCheckSection).where(HealthCheckSection.id == section_id)
+        )
         section = result.scalar_one_or_none()
         if not section:
             return False

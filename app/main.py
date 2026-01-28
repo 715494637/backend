@@ -26,6 +26,9 @@ from app.domains.risks.router import router as risks_router
 from app.domains.service_requests.router import router as service_requests_router
 from app.domains.civil_code.router import router as civil_code_router
 from app.domains.enterprises.router import router as enterprises_router
+from app.domains.health_check.router import router as health_check_router
+from app.domains.contact_qr.router import router as contact_qr_router
+from app.domains.scripts.router import router as scripts_router
 
 
 # ============================================
@@ -149,6 +152,15 @@ app.include_router(risks_router, prefix="/api/v1/risks", tags=["风险场景"])
 
 # 物业公司
 app.include_router(enterprises_router, prefix="/api/v1/enterprises", tags=["物业公司"])
+
+# 法务体检
+app.include_router(health_check_router, prefix="/api/v1/health-check", tags=["法务体检"])
+
+# 联系二维码
+app.include_router(contact_qr_router, prefix="/api/v1/contact-qr", tags=["联系二维码"])
+
+# 话术库
+app.include_router(scripts_router, prefix="/api/v1", tags=["话术库"])
 
 
 # ============================================
