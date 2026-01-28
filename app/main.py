@@ -28,7 +28,10 @@ from app.domains.civil_code.router import router as civil_code_router
 from app.domains.enterprises.router import router as enterprises_router
 from app.domains.health_check.router import router as health_check_router
 from app.domains.contact_qr.router import router as contact_qr_router
-from app.domains.scripts.router import router as scripts_router
+from app.domains.scripts.router import router as scripts_router, collection_router
+from app.domains.special_projects.router import router as special_projects_router
+from app.domains.vip.router import router as vip_router
+from app.domains.posters.router import router as posters_router
 
 
 # ============================================
@@ -161,6 +164,18 @@ app.include_router(contact_qr_router, prefix="/api/v1/contact-qr", tags=["联系
 
 # 话术库
 app.include_router(scripts_router, prefix="/api/v1", tags=["话术库"])
+
+# 催收话术库（用户端只读）
+app.include_router(collection_router, prefix="/api/v1", tags=["催收话术库"])
+
+# 专项服务
+app.include_router(special_projects_router, prefix="/api/v1/special-projects", tags=["专项服务"])
+
+# VIP权益
+app.include_router(vip_router, prefix="/api/v1/vip", tags=["VIP权益"])
+
+# 自定义海报
+app.include_router(posters_router, prefix="/api/v1/posters", tags=["自定义海报"])
 
 
 # ============================================
