@@ -68,6 +68,7 @@ async def init_db() -> None:
         from app.domains.auth import models as auth_models  # noqa: F401
         from app.domains.users import models as users_models  # noqa: F401
         from app.domains.collections import models as collections_models  # noqa: F401
+        from app.domains.evidence import models as evidence_models  # noqa: F401
 
         # 创建所有表
         await conn.run_sync(Base.metadata.create_all)

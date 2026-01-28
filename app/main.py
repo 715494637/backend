@@ -25,6 +25,7 @@ from app.domains.sops.router import router as sops_router
 from app.domains.risks.router import router as risks_router
 from app.domains.service_requests.router import router as service_requests_router
 from app.domains.civil_code.router import router as civil_code_router
+from app.domains.enterprises.router import router as enterprises_router
 
 
 # ============================================
@@ -142,6 +143,12 @@ app.include_router(sops_router, prefix="/api/v1/sops", tags=["应急预案"])
 
 # 民法典
 app.include_router(civil_code_router, prefix="/api/v1/civil-code", tags=["民法典"])
+
+# 风险场景
+app.include_router(risks_router, prefix="/api/v1/risks", tags=["风险场景"])
+
+# 物业公司
+app.include_router(enterprises_router, prefix="/api/v1/enterprises", tags=["物业公司"])
 
 
 # ============================================
