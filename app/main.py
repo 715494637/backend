@@ -18,6 +18,13 @@ from app.utils import logger
 from app.domains.auth.router import router as auth_router
 from app.domains.users.router import router as users_router
 from app.domains.collections.router import router as collections_router
+from app.domains.documents.router import router as documents_router
+from app.domains.renovation.router import router as renovation_router
+from app.domains.evidence.router import router as evidence_router
+from app.domains.sops.router import router as sops_router
+from app.domains.risks.router import router as risks_router
+from app.domains.service_requests.router import router as service_requests_router
+from app.domains.civil_code.router import router as civil_code_router
 
 
 # ============================================
@@ -117,6 +124,24 @@ app.include_router(users_router, prefix="/api/v1/users", tags=["用户管理"])
 
 # 催收记录
 app.include_router(collections_router, prefix="/api/v1/collections", tags=["催收记录"])
+
+# 文档模板
+app.include_router(documents_router, prefix="/api/v1/documents", tags=["文档模板"])
+
+# 装修巡查
+app.include_router(renovation_router, prefix="/api/v1/renovation", tags=["装修巡查"])
+
+# 证据清单
+app.include_router(evidence_router, prefix="/api/v1/evidence", tags=["证据清单"])
+
+# 服务请求
+app.include_router(service_requests_router, prefix="/api/v1/service-requests", tags=["服务请求"])
+
+# 应急预案
+app.include_router(sops_router, prefix="/api/v1/sops", tags=["应急预案"])
+
+# 民法典
+app.include_router(civil_code_router, prefix="/api/v1/civil-code", tags=["民法典"])
 
 
 # ============================================
