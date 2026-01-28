@@ -3,8 +3,13 @@
 """
 
 from sqlalchemy import Column, String
-from app.db import Base
-from app.utils import generate_uuid
+from app.config.database import Base
+
+
+def generate_uuid() -> str:
+    """生成 UUID 字符串"""
+    import uuid
+    return str(uuid.uuid4())
 
 
 class Enterprise(Base):
